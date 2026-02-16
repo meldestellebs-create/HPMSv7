@@ -682,9 +682,11 @@ body {
 </div>
 
 <div class="tab-navigation">
-  <button class="tab-button active" onclick="switchTab('tool')">📚 Bildungswege finden</button>
+  <button class="tab-button active" onclick="switchTab('tool')">📚 Bildungswegetool</button>
   <button class="tab-button" onclick="switchTab('begriffe')">💡 Begriffe erklärt</button>
   <button class="tab-button" onclick="switchTab('quiz')">🎯 Berufswahl-Quiz</button>
+  <button class="tab-button" onclick="switchTab('ausbildung')">🧭 Ausbildungs-Navigator</button>
+  <button class="tab-button" onclick="switchTab('schule')">🎓 Schule und dann?</button>
 </div>
 
 <!-- ==================== TAB 1: Bildungswege Tool ==================== -->
@@ -2147,136 +2149,888 @@ document.addEventListener('DOMContentLoaded', function() {
 <div id="ausbildung-tab" class="tab-content">
   <div style="max-width: 1500px; margin: 0 auto; padding: 40px 20px;">
 
+    <!-- Header -->
     <div class="header" style="text-align: center; margin-bottom: 50px;">
       <h1 style="font-size: 2.5rem; margin-bottom: 15px;">🧭 Ausbildungs-Navigator</h1>
       <p style="font-size: 1.2rem; color: var(--text-gray);">Finde deinen Weg zur Ausbildung in Stuttgart & Landkreis Böblingen</p>
     </div>
 
+    <!-- SCHRITT 1: Interessenfilter -->
     <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px; border-radius: 20px; margin-bottom: 40px; color: white;">
       <h2 style="color: white; margin-bottom: 25px; font-size: 1.8rem;">🎯 Schritt 1: Was interessiert dich?</h2>
       <p style="margin-bottom: 25px; font-size: 1.1rem;">Wähle ein oder mehrere Berufsfelder aus. Die passenden Berufe werden dir sofort angezeigt!</p>
 
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px;">
-        <button onclick="filterBerufe('technik')" class="interest-btn" data-category="technik">🔧 Technik & Handwerk</button>
-        <button onclick="filterBerufe('it')" class="interest-btn" data-category="it">💻 IT & Computer</button>
-        <button onclick="filterBerufe('buero')" class="interest-btn" data-category="buero">💼 Büro & Verwaltung</button>
-        <button onclick="filterBerufe('gesundheit')" class="interest-btn" data-category="gesundheit">🏥 Gesundheit & Soziales</button>
-        <button onclick="filterBerufe('verkauf')" class="interest-btn" data-category="verkauf">🛒 Verkauf & Handel</button>
-        <button onclick="filterBerufe('kreativ')" class="interest-btn" data-category="kreativ">🎨 Kreativ & Medien</button>
-        <button onclick="filterBerufe('bau')" class="interest-btn" data-category="bau">🏗️ Bau & Architektur</button>
-        <button onclick="filterBerufe('natur')" class="interest-btn" data-category="natur">🌱 Natur & Umwelt</button>
+        <button onclick="filterBerufe('technik')" class="interest-btn" data-category="technik">
+          🔧 Technik & Handwerk
+        </button>
+        <button onclick="filterBerufe('it')" class="interest-btn" data-category="it">
+          💻 IT & Computer
+        </button>
+        <button onclick="filterBerufe('buero')" class="interest-btn" data-category="buero">
+          💼 Büro & Verwaltung
+        </button>
+        <button onclick="filterBerufe('gesundheit')" class="interest-btn" data-category="gesundheit">
+          🏥 Gesundheit & Soziales
+        </button>
+        <button onclick="filterBerufe('verkauf')" class="interest-btn" data-category="verkauf">
+          🛒 Verkauf & Handel
+        </button>
+        <button onclick="filterBerufe('kreativ')" class="interest-btn" data-category="kreativ">
+          🎨 Kreativ & Medien
+        </button>
+        <button onclick="filterBerufe('bau')" class="interest-btn" data-category="bau">
+          🏗️ Bau & Architektur
+        </button>
+        <button onclick="filterBerufe('natur')" class="interest-btn" data-category="natur">
+          🌱 Natur & Umwelt
+        </button>
       </div>
 
       <div style="margin-top: 25px; text-align: center;">
-        <button onclick="resetFilter()" style="background: white; color: #667eea; padding: 12px 30px; border: none; border-radius: 25px; font-weight: 600; cursor: pointer; font-size: 1rem;">🔄 Alle anzeigen</button>
+        <button onclick="resetFilter()" style="background: white; color: #667eea; padding: 12px 30px; border: none; border-radius: 25px; font-weight: 600; cursor: pointer; font-size: 1rem;">
+          🔄 Alle anzeigen
+        </button>
       </div>
     </div>
 
-    <div id="result-info" style="text-align: center; margin-bottom: 30px; font-size: 1.3rem; font-weight: 700; min-height: 40px; color: #667eea;">
-      👆 Wähle oben ein Berufsfeld aus, um passende Ausbildungen zu entdecken!
+    <!-- Ergebnis-Anzeige -->
+    <div id="result-info" style="text-align: center; margin-bottom: 30px; font-size: 1.2rem; font-weight: 600; min-height: 30px; color: var(--primary-blue);">
     </div>
 
+    <!-- SCHRITT 2: Berufe-Grid -->
     <div id="berufe-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; margin-bottom: 50px;">
 
-      <!-- TECHNIK & HANDWERK -->
-      <div class="beruf-card" data-categories="technik" style="display:none;">
-        <div class="beruf-header" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
-          <h3>🚗 KFZ-Mechatroniker/in</h3>
+      <!-- IT Berufe -->
+      <div class="beruf-card" data-categories="it">
+        <div class="beruf-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+          <h3>💻 Fachinformatiker/in</h3>
+          <span class="abschluss-badge">MR / HR</span>
+        </div>
+        <div class="beruf-body">
+          <p><strong>4 Fachrichtungen:</strong></p>
+          <ul>
+            <li>Anwendungsentwicklung (147 Plätze)</li>
+            <li>Systemintegration (192 Plätze)</li>
+            <li>Daten- und Prozessanalyse (12 Plätze)</li>
+            <li>Digitale Vernetzung (30 Plätze)</li>
+          </ul>
+          <p><strong>Dauer:</strong> 3 Jahre<br>
+          <strong>Berufsschule:</strong> IT-Schule Stuttgart, GDS2 Sindelfingen</p>
+          <div class="beruf-footer">
+            <span class="chancen-gut">✅ Sehr gute Chancen</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="beruf-card" data-categories="it buero">
+        <div class="beruf-header" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+          <h3>💻 IT-System-Elektroniker/in</h3>
           <span class="abschluss-badge">MR</span>
         </div>
         <div class="beruf-body">
-          <p><strong>5 Fachrichtungen:</strong> PKW-Technik (meiste Plätze), Nutzfahrzeuge, System- und Hochvolttechnik, Motorrad, Karosserie</p>
-          <p><strong>Verträge 2023:</strong> 309 - Sehr viele Plätze!<br><strong>Dauer:</strong> 3,5 Jahre</p>
-          <div class="beruf-footer"><span class="chancen-sehr-gut">🔥 Sehr viele Plätze!</span></div>
+          <p>Installiere und konfiguriere IT-Systeme, Netzwerke und Sicherheitstechnik.</p>
+          <p><strong>Verträge 2023:</strong> 33<br>
+          <strong>Dauer:</strong> 3 Jahre<br>
+          <strong>Berufsschule:</strong> IT-Schule Stuttgart</p>
+          <div class="beruf-footer">
+            <span class="chancen-gut">✅ Gute Chancen</span>
+          </div>
         </div>
       </div>
 
-      <div class="beruf-card" data-categories="technik" style="display:none;">
-        <div class="beruf-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+      <!-- Technik Berufe -->
+      <div class="beruf-card" data-categories="technik">
+        <div class="beruf-header" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
           <h3>🔧 Mechatroniker/in</h3>
           <span class="abschluss-badge">MR</span>
         </div>
         <div class="beruf-body">
           <p>Verbinde Mechanik, Elektronik und Informatik! Baue und warte komplexe Maschinen und Anlagen.</p>
-          <p><strong>Verträge 2023:</strong> 129<br><strong>Dauer:</strong> 3,5 Jahre<br><strong>Berufsschulen:</strong> Robert-Bosch-Schule, Werner-Siemens-Schule, GDS2</p>
-          <div class="beruf-footer"><span class="chancen-sehr-gut">🔥 Sehr viele Plätze!</span></div>
+          <p><strong>Verträge 2023:</strong> 129<br>
+          <strong>Dauer:</strong> 3,5 Jahre<br>
+          <strong>Berufsschulen:</strong> Robert-Bosch-Schule, Werner-Siemens-Schule, GDS2 Sindelfingen</p>
+          <div class="beruf-footer">
+            <span class="chancen-gut">✅ Sehr gute Chancen</span>
+          </div>
         </div>
       </div>
 
-      <div class="beruf-card" data-categories="technik" style="display:none;">
+      <div class="beruf-card" data-categories="technik">
         <div class="beruf-header" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-          <h3>🏭 Industriemechaniker/in</h3>
+          <h3>⚡ Elektroniker/in</h3>
+          <span class="abschluss-badge">MR</span>
+        </div>
+        <div class="beruf-body">
+          <p><strong>Mehrere Fachrichtungen:</strong></p>
+          <ul>
+            <li>Energie- und Gebäudetechnik (159)</li>
+            <li>Betriebstechnik (66)</li>
+            <li>Automatisierungstechnik (39)</li>
+          </ul>
+          <p><strong>Dauer:</strong> 3,5 Jahre<br>
+          <strong>Berufsschule:</strong> Werner-Siemens-Schule Stuttgart</p>
+          <div class="beruf-footer">
+            <span class="chancen-gut">✅ Sehr gute Chancen</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="beruf-card" data-categories="technik">
+        <div class="beruf-header" style="background: linear-gradient(135deg, #ff9a56 0%, #ff6a00 100%);">
+          <h3>🔩 Industriemechaniker/in</h3>
+          <span class="abschluss-badge">HS / MR</span>
+        </div>
+        <div class="beruf-body">
+          <p>Baue, warte und repariere Maschinen und Produktionsanlagen in der Industrie.</p>
+          <p><strong>Verträge 2023:</strong> 78<br>
+          <strong>Dauer:</strong> 3,5 Jahre<br>
+          <strong>Berufsschulen:</strong> Max-Eyth-Schule, Robert-Bosch-Schule, Wilhelm-Maybach-Schule</p>
+          <div class="beruf-footer">
+            <span class="chancen-gut">✅ Gute Chancen</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="beruf-card" data-categories="technik">
+        <div class="beruf-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+          <h3>🚗 KFZ-Mechatroniker/in</h3>
+          <span class="abschluss-badge">MR</span>
+        </div>
+        <div class="beruf-body">
+          <p><strong>5 Fachrichtungen:</strong></p>
+          <ul>
+            <li>Personenkraftwagentechnik</li>
+            <li>Nutzfahrzeugtechnik</li>
+            <li>System- und Hochvolttechnik</li>
+            <li>Motorradtechnik</li>
+            <li>Karosserietechnik</li>
+          </ul>
+          <p><strong>Verträge gesamt:</strong> 309<br>
+          <strong>Dauer:</strong> 3,5 Jahre</p>
+          <div class="beruf-footer">
+            <span class="chancen-sehr-gut">🔥 Sehr viele Plätze</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Büro & Verwaltung -->
+      <div class="beruf-card" data-categories="buero">
+        <div class="beruf-header" style="background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);">
+          <h3>💼 Kaufmann/-frau Büromanagement</h3>
+          <span class="abschluss-badge">MR</span>
+        </div>
+        <div class="beruf-body">
+          <p>Organisiere Büroabläufe, erstelle Dokumente, koordiniere Termine und kommuniziere mit Kunden.</p>
+          <p><strong>Verträge 2023:</strong> 396<br>
+          <strong>Dauer:</strong> 3 Jahre<br>
+          <strong>Berufsschulen:</strong> Louis-Leitz-Schule, KSZ Böblingen, BSZ Leonberg</p>
+          <div class="beruf-footer">
+            <span class="chancen-sehr-gut">🔥 Sehr viele Plätze!</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="beruf-card" data-categories="buero">
+        <div class="beruf-header" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+          <h3>🏦 Bankkaufmann/-frau</h3>
+          <span class="abschluss-badge">MR</span>
+        </div>
+        <div class="beruf-body">
+          <p>Berate Kunden in Geldangelegenheiten, Krediten und Versicherungen.</p>
+          <p><strong>Verträge 2023:</strong> 183<br>
+          <strong>Dauer:</strong> 3 Jahre<br>
+          <strong>Berufsschulen:</strong> Kaufmännische Schule 1 Stuttgart, KSZ Böblingen</p>
+          <div class="beruf-footer">
+            <span class="chancen-gut">✅ Gute Chancen</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="beruf-card" data-categories="buero">
+        <div class="beruf-header" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+          <h3>🏭 Industriekaufmann/-frau</h3>
+          <span class="abschluss-badge">MR</span>
+        </div>
+        <div class="beruf-body">
+          <p>Arbeite in Bereichen wie Einkauf, Verkauf, Personal oder Marketing in Industrieunternehmen.</p>
+          <p><strong>Verträge 2023:</strong> 132<br>
+          <strong>Dauer:</strong> 3 Jahre<br>
+          <strong>Berufsschulen:</strong> Louis-Leitz-Schule, KSZ Böblingen</p>
+          <div class="beruf-footer">
+            <span class="chancen-gut">✅ Gute Chancen</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gesundheit & Soziales -->
+      <div class="beruf-card" data-categories="gesundheit">
+        <div class="beruf-header" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+          <h3>🏥 Medizinische/r Fachangestellte/r</h3>
+          <span class="abschluss-badge">MR</span>
+        </div>
+        <div class="beruf-body">
+          <p>Arbeite in Arztpraxen: Patientenbetreuung, Terminvergabe, Assistenz bei Untersuchungen, Abrechnung.</p>
+          <p><strong>Verträge 2023:</strong> 312<br>
+          <strong>Dauer:</strong> 3 Jahre<br>
+          <strong>Berufsschulen:</strong> Alexander-Fleming-Schule, GDS2 Sindelfingen</p>
+          <div class="beruf-footer">
+            <span class="chancen-sehr-gut">🔥 Sehr viele Plätze!</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="beruf-card" data-categories="gesundheit">
+        <div class="beruf-header" style="background: linear-gradient(135deg, #fee140 0%, #fa709a 100%);">
+          <h3>🦷 Zahnmedizinische/r Fachangestellte/r</h3>
+          <span class="abschluss-badge">MR</span>
+        </div>
+        <div class="beruf-body">
+          <p>Assistiere bei Behandlungen, betreue Patienten und organisiere Praxisabläufe.</p>
+          <p><strong>Verträge 2023:</strong> 159<br>
+          <strong>Dauer:</strong> 3 Jahre<br>
+          <strong>Berufsschulen:</strong> Alexander-Fleming-Schule, GDS2 Sindelfingen</p>
+          <div class="beruf-footer">
+            <span class="chancen-gut">✅ Sehr gute Chancen</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="beruf-card" data-categories="gesundheit">
+        <div class="beruf-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+          <h3>🩺 Pflegefachmann/-frau</h3>
+          <span class="abschluss-badge">MR / HS</span>
+        </div>
+        <div class="beruf-body">
+          <p>Pflege und Betreuung von Menschen in Krankenhäusern, Pflegeheimen oder ambulanten Diensten.</p>
+          <p><strong>Dauer:</strong> 3 Jahre<br>
+          <strong>Schulen:</strong> Klinikum Stuttgart, Kolping, Diakonie, Wohlfahrtswerk u.a.<br>
+          <strong>Vergütung:</strong> ✅ Ja</p>
+          <div class="beruf-footer">
+            <span class="chancen-sehr-gut">🔥 Dringend gesucht!</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Verkauf & Handel -->
+      <div class="beruf-card" data-categories="verkauf">
+        <div class="beruf-header" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+          <h3>🛒 Kaufmann/-frau Einzelhandel</h3>
+          <span class="abschluss-badge">HS / MR</span>
+        </div>
+        <div class="beruf-body">
+          <p>Verkaufe Waren, berate Kunden, bestelle Produkte und gestalte Verkaufsräume.</p>
+          <p><strong>Verträge 2023:</strong> 195<br>
+          <strong>Dauer:</strong> 3 Jahre<br>
+          <strong>Berufsschulen:</strong> Cotta-Schule, KSZ Böblingen, BSZ Leonberg</p>
+          <div class="beruf-footer">
+            <span class="chancen-gut">✅ Viele Plätze</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="beruf-card" data-categories="verkauf">
+        <div class="beruf-header" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+          <h3>🛍️ Verkäufer/in</h3>
           <span class="abschluss-badge">HS</span>
         </div>
         <div class="beruf-body">
-          <p>Stelle Bauteile her, richte Maschinen ein und warte Produktionsanlagen.</p>
-          <p><strong>Verträge 2023:</strong> 78<br><strong>Dauer:</strong> 3,5 Jahre</p>
-          <div class="beruf-footer"><span class="chancen-sehr-gut">🔥 Viele Plätze</span></div>
+          <p>2-jährige Ausbildung im Einzelhandel mit Kundenkontakt und Warenverkauf.</p>
+          <p><strong>Verträge 2023:</strong> 129<br>
+          <strong>Dauer:</strong> 2 Jahre<br>
+          <strong>Fortsetzung:</strong> 3. Jahr → Kaufmann/-frau Einzelhandel möglich</p>
+          <div class="beruf-footer">
+            <span class="chancen-gut">✅ Gute Chancen</span>
+          </div>
         </div>
       </div>
 
-      <!-- Hier fehlen noch ca. 90 weitere Berufe -->
+      <!-- Kreativ & Medien -->
+      <div class="beruf-card" data-categories="kreativ">
+        <div class="beruf-header" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+          <h3>🎨 Mediengestalter/in Digital und Print</h3>
+          <span class="abschluss-badge">MR / HR</span>
+        </div>
+        <div class="beruf-body">
+          <p>Gestalte digitale und gedruckte Medien: Websites, Flyer, Magazine, Corporate Design.</p>
+          <p><strong>Verträge 2023:</strong> 30<br>
+          <strong>Dauer:</strong> 3 Jahre<br>
+          <strong>Berufsschule:</strong> Johannes-Gutenberg-Schule</p>
+          <div class="beruf-footer">
+            <span class="chancen-mittel">⚠️ Hohe Konkurrenz</span>
+          </div>
+        </div>
+      </div>
 
-      <!-- Die vollständige Version mit allen 93 Berufen ist zu lang für direkte Ausgabe -->
+      <div class="beruf-card" data-categories="kreativ">
+        <div class="beruf-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+          <h3>📸 Fotograf/in</h3>
+          <span class="abschluss-badge">HR</span>
+        </div>
+        <div class="beruf-body">
+          <p>Erstelle professionelle Fotos für Werbung, Events, Porträts oder Reportagen.</p>
+          <p><strong>Verträge 2023:</strong> 3<br>
+          <strong>Dauer:</strong> 3 Jahre<br>
+          <strong>Berufsschule:</strong> Johannes-Gutenberg-Schule</p>
+          <div class="beruf-footer">
+            <span class="chancen-schwer">⚠️ Wenige Plätze</span>
+          </div>
+        </div>
+      </div>
 
-      <!-- Bitte nutze die heruntergeladene HTML-Datei code_file:38 -->
+      <!-- Bau & Architektur -->
+      <div class="beruf-card" data-categories="bau">
+        <div class="beruf-header" style="background: linear-gradient(135deg, #ff9a56 0%, #ff6a00 100%);">
+          <h3>🏗️ Bauzeichner/in</h3>
+          <span class="abschluss-badge">MR</span>
+        </div>
+        <div class="beruf-body">
+          <p>Erstelle technische Zeichnungen und Pläne für Gebäude, Straßen und Ingenieurbauwerke.</p>
+          <p><strong>Verträge 2023:</strong> 33<br>
+          <strong>Dauer:</strong> 3 Jahre<br>
+          <strong>Berufsschule:</strong> Steinbeisschule Stuttgart</p>
+          <div class="beruf-footer">
+            <span class="chancen-gut">✅ Gute Chancen</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="beruf-card" data-categories="bau technik">
+        <div class="beruf-header" style="background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);">
+          <h3>🏠 Anlagenmechaniker/in Sanitär-Heizung-Klima</h3>
+          <span class="abschluss-badge">HS / MR</span>
+        </div>
+        <div class="beruf-body">
+          <p>Installiere Heizungen, Sanitäranlagen, Klimaanlagen und Rohrleitungssysteme.</p>
+          <p><strong>Verträge 2023:</strong> 165<br>
+          <strong>Dauer:</strong> 3,5 Jahre<br>
+          <strong>Berufsschulen:</strong> Robert-Mayer-Schule, GDS1 Sindelfingen</p>
+          <div class="beruf-footer">
+            <span class="chancen-sehr-gut">✅ Sehr gute Chancen</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="beruf-card" data-categories="bau">
+        <div class="beruf-header" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+          <h3>🎨 Maler/in und Lackierer/in</h3>
+          <span class="abschluss-badge">HS</span>
+        </div>
+        <div class="beruf-body">
+          <p>Gestalte Räume mit Farbe, behandle Oberflächen und führe Malerarbeiten aus.</p>
+          <p><strong>Verträge 2023:</strong> 72<br>
+          <strong>Dauer:</strong> 3 Jahre<br>
+          <strong>Berufsschule:</strong> Schule für Farbe und Gestaltung, GDS1 Sindelfingen</p>
+          <div class="beruf-footer">
+            <span class="chancen-gut">✅ Gute Chancen</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Natur & Umwelt -->
+      <div class="beruf-card" data-categories="natur">
+        <div class="beruf-header" style="background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);">
+          <h3>🌱 Gärtner/in</h3>
+          <span class="abschluss-badge">HS / MR</span>
+        </div>
+        <div class="beruf-body">
+          <p><strong>Fachrichtungen:</strong></p>
+          <ul>
+            <li>Garten- und Landschaftsbau (30)</li>
+            <li>Zierpflanzenbau (6)</li>
+            <li>Gemüsebau (3)</li>
+          </ul>
+          <p><strong>Dauer:</strong> 3 Jahre<br>
+          <strong>Berufsschule:</strong> Landwirtschaftliche Schule Stuttgart</p>
+          <div class="beruf-footer">
+            <span class="chancen-gut">✅ Gute Chancen</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="beruf-card" data-categories="natur">
+        <div class="beruf-header" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);">
+          <h3>🌾 Landwirt/in</h3>
+          <span class="abschluss-badge">MR</span>
+        </div>
+        <div class="beruf-body">
+          <p>Bewirtschafte landwirtschaftliche Betriebe: Ackerbau, Tierhaltung, Technik.</p>
+          <p><strong>Verträge 2023:</strong> 9<br>
+          <strong>Dauer:</strong> 3 Jahre<br>
+          <strong>Berufsschule:</strong> Mathilde-Planck-Schule Ludwigsburg</p>
+          <div class="beruf-footer">
+            <span class="chancen-mittel">⚠️ Wenige Plätze</span>
+          </div>
+        </div>
+      </div>
 
     </div>
 
-    <div style="background: var(--bg-light); padding: 40px; border-radius: 20px;">
-      <h2>📚 Wichtige Infos zur Bewerbung</h2>
-      <p>IHK-Lehrstellenbörse, HWK-Lehrstellenbörse, Arbeitsagentur.de</p>
-    </div>
-  </div>
-</div>
+    <!-- SCHRITT 3: Wichtige Infos -->
+    <div style="background: var(--bg-light); padding: 40px; border-radius: 20px; margin-top: 50px;">
+      <h2 style="color: var(--primary-blue); margin-bottom: 30px; font-size: 1.8rem;">📚 Wichtige Infos zur Bewerbung</h2>
 
-<!-- TAB 5 -->
-<div id="schule-tab" class="tab-content">
-  <div style="max-width: 1500px; margin: 0 auto; padding: 40px 22px;">
-    <h1>🎓 Schule und dann?</h1>
-    <table style="width: 100%;">
-      <tr><td>Agentur für Arbeit</td><td>Berufsberatung</td><td>0800 4555500</td></tr>
-    </table>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+        <div class="info-box" style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+          <h3 style="color: var(--primary-blue); margin-bottom: 15px;">⏰ Wann bewerben?</h3>
+          <p><strong>Großbetriebe:</strong> 12-18 Monate vorher<br>
+          <strong>Kleine Betriebe:</strong> 6-12 Monate vorher<br>
+          <strong>Optimal:</strong> Start im Sommer vor dem letzten Schuljahr</p>
+        </div>
+
+        <div class="info-box" style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+          <h3 style="color: var(--primary-blue); margin-bottom: 15px;">📝 Was brauchst du?</h3>
+          <ul style="line-height: 1.8;">
+            <li>Anschreiben</li>
+            <li>Lebenslauf mit Foto</li>
+            <li>Letzten 2 Schulzeugnisse</li>
+            <li>Praktikumsnachweise (falls vorhanden)</li>
+          </ul>
+        </div>
+
+        <div class="info-box" style="background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+          <h3 style="color: var(--primary-blue); margin-bottom: 15px;">🔍 Wo suchen?</h3>
+          <p><strong>Online-Börsen:</strong><br>
+          • IHK-Lehrstellenbörse<br>
+          • HWK-Lehrstellenbörse<br>
+          • Arbeitsagentur.de<br>
+          • Azubiyo.de, Ausbildung.de</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kontakt -->
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px; border-radius: 20px; margin-top: 40px; color: white; text-align: center;">
+      <h2 style="color: white; margin-bottom: 20px;">📞 Brauchst du Hilfe?</h2>
+      <p style="font-size: 1.1rem; margin-bottom: 25px;">Die Berufsberatung der Agentur für Arbeit hilft dir kostenlos!</p>
+      <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
+        <div>
+          <p style="font-weight: 600; margin-bottom: 5px;">Hotline (kostenfrei):</p>
+          <p style="font-size: 1.3rem;">0800 4 5555 00</p>
+        </div>
+        <div>
+          <p style="font-weight: 600; margin-bottom: 5px;">Online:</p>
+          <p style="font-size: 1.1rem;">www.arbeitsagentur.de/bildung</p>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
 <style>
-.interest-btn { background: white; color: #667eea; padding: 15px; border-radius: 12px; cursor: pointer; }
-.interest-btn.active { background: #4caf50; color: white; }
-.beruf-card { background: white; border-radius: 16px; margin-bottom: 20px; }
-.beruf-header { padding: 20px; color: white; }
-.beruf-body { padding: 20px; }
-.chancen-sehr-gut { background: #d4edda; color: #155724; padding: 8px 15px; border-radius: 20px; }
+.interest-btn {
+  background: white;
+  color: #667eea;
+  padding: 15px 20px;
+  border: 3px solid white;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.interest-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.interest-btn.active {
+  background: #4caf50;
+  color: white;
+  border-color: #4caf50;
+  transform: scale(1.05);
+}
+
+.beruf-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  display: block;
+}
+
+.beruf-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+
+.beruf-card.hidden {
+  display: none;
+}
+
+.beruf-header {
+  padding: 20px;
+  color: white;
+  position: relative;
+}
+
+.beruf-header h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.3rem;
+}
+
+.abschluss-badge {
+  background: rgba(255,255,255,0.3);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.beruf-body {
+  padding: 20px;
+  line-height: 1.7;
+}
+
+.beruf-body ul {
+  margin: 10px 0;
+  padding-left: 20px;
+}
+
+.beruf-body li {
+  margin: 5px 0;
+}
+
+.beruf-footer {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 2px solid #f0f0f0;
+}
+
+.chancen-sehr-gut {
+  background: #d4edda;
+  color: #155724;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.chancen-gut {
+  background: #cce5ff;
+  color: #004085;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.chancen-mittel {
+  background: #fff3cd;
+  color: #856404;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.chancen-schwer {
+  background: #f8d7da;
+  color: #721c24;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
 </style>
+
 <script>
 let activeCategories = new Set();
-function filterBerufe(cat) {
-  const btn = document.querySelector('[data-category="'+cat+'"]');
-  if(activeCategories.has(cat)) { activeCategories.delete(cat); btn.classList.remove('active'); }
-  else { activeCategories.add(cat); btn.classList.add('active'); }
+
+function filterBerufe(category) {
+  const btn = document.querySelector(`[data-category="${category}"]`);
+
+  if (activeCategories.has(category)) {
+    activeCategories.delete(category);
+    btn.classList.remove('active');
+  } else {
+    activeCategories.add(category);
+    btn.classList.add('active');
+  }
+
   updateBerufeDisplay();
 }
+
 function resetFilter() {
   activeCategories.clear();
-  document.querySelectorAll('.interest-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.interest-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
   updateBerufeDisplay();
 }
+
 function updateBerufeDisplay() {
   const cards = document.querySelectorAll('.beruf-card');
-  let count = 0;
-  if(activeCategories.size === 0) {
-    cards.forEach(c => c.style.display = 'none');
-    document.getElementById('result-info').innerHTML = '👆 Wähle ein Berufsfeld!';
-  } else {
-    cards.forEach(c => {
-      const cats = c.dataset.categories.split(' ');
-      const match = cats.some(cat => activeCategories.has(cat));
-      c.style.display = match ? 'block' : 'none';
-      if(match) count++;
+  const resultInfo = document.getElementById('result-info');
+  let visibleCount = 0;
+
+  if (activeCategories.size === 0) {
+    // Alle anzeigen
+    cards.forEach(card => {
+      card.classList.remove('hidden');
+      card.style.display = 'block';
+      visibleCount++;
     });
-    document.getElementById('result-info').innerHTML = '✅ '+count+' Berufe gefunden!';
+    resultInfo.innerHTML = `📊 Alle ${visibleCount} Ausbildungsberufe werden angezeigt`;
+  } else {
+    // Filter aktiv
+    cards.forEach(card => {
+      const cardCategories = card.dataset.categories.split(' ');
+      const matches = cardCategories.some(cat => activeCategories.has(cat));
+
+      if (matches) {
+        card.classList.remove('hidden');
+        card.style.display = 'block';
+        visibleCount++;
+      } else {
+        card.classList.add('hidden');
+        card.style.display = 'none';
+      }
+    });
+
+    if (visibleCount > 0) {
+      resultInfo.innerHTML = `✅ ${visibleCount} passende Ausbildungsberuf${visibleCount > 1 ? 'e' : ''} gefunden!`;
+      resultInfo.style.color = '#4caf50';
+    } else {
+      resultInfo.innerHTML = `❌ Keine passenden Berufe gefunden. Probiere eine andere Kategorie!`;
+      resultInfo.style.color = '#f44336';
+    }
   }
 }
+
+// Initial anzeigen
+updateBerufeDisplay();
 </script>
+
+<!-- ==================== TAB 5: Schule und dann? ==================== -->
+<div id="schule-tab" class="tab-content">
+  <div style="max-width: 1500px; margin: 0 auto; padding: 40px 20px;">
+    <div class="header" style="margin-bottom: 40px;">
+      <h1 style="font-size: 2rem;">🎓 Schule und dann?</h1>
+      <p>Bildungs- und Qualifizierungswege in Stuttgart</p>
+    </div>
+
+    <!-- Startpunkt-Auswahl -->
+    <div style="margin-bottom: 50px;">
+      <h2 style="color: var(--primary-blue); margin-bottom: 25px;">📍 Wähle deinen Startpunkt:</h2>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 25px;">
+        <!-- Karte 1 -->
+        <div class="path-card">
+          <h3 style="color: var(--primary-blue); margin-bottom: 15px;">🎒 Kein Schulabschluss</h3>
+          <p style="margin-bottom: 15px;"><strong>Du möchtest...</strong></p>
+
+          <div style="margin-bottom: 20px;">
+            <p style="font-weight: 600; margin-bottom: 8px;">✓ Hauptschulabschluss machen:</p>
+            <ul style="margin-left: 20px; line-height: 1.8;">
+              <li>AVdual (Ausbildungsvorbereitung dual)</li>
+              <li>BvB (Berufsvorbereitende Bildungsmaßnahme)</li>
+              <li>1-jährige Berufsfachschule</li>
+              <li>Schulfremdenprüfung</li>
+            </ul>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <p style="font-weight: 600; margin-bottom: 8px;">✓ Beruflich orientieren:</p>
+            <ul style="margin-left: 20px; line-height: 1.8;">
+              <li>VABO (für Deutschförderung)</li>
+              <li>Freiwilligendienst (FSJ/BFD)</li>
+              <li>EQ (Einstiegsqualifizierung)</li>
+            </ul>
+          </div>
+
+          <div>
+            <p style="font-weight: 600; margin-bottom: 8px;">✓ Ausbildung beginnen:</p>
+            <ul style="margin-left: 20px; line-height: 1.8;">
+              <li>Duale Ausbildung (in manchen Berufen möglich)</li>
+              <li>BaE (Berufsausbildung mit Begleitung)</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Karte 2 -->
+        <div class="path-card">
+          <h3 style="color: var(--primary-blue); margin-bottom: 15px;">📘 Hauptschulabschluss</h3>
+          <p style="margin-bottom: 15px;"><strong>Du möchtest...</strong></p>
+
+          <div style="margin-bottom: 20px;">
+            <p style="font-weight: 600; margin-bottom: 8px;">✓ Mittlere Reife erreichen:</p>
+            <ul style="margin-left: 20px; line-height: 1.8;">
+              <li>2BFS (2-jährige Berufsfachschule)</li>
+              <li>BAS (Berufsaufbauschule)</li>
+              <li>Modell 9+3 (über Ausbildung)</li>
+              <li>Abendrealschule</li>
+            </ul>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <p style="font-weight: 600; margin-bottom: 8px;">✓ Beruflich orientieren:</p>
+            <ul style="margin-left: 20px; line-height: 1.8;">
+              <li>AVdual</li>
+              <li>Freiwilligendienst</li>
+              <li>EQ (Einstiegsqualifizierung)</li>
+            </ul>
+          </div>
+
+          <div>
+            <p style="font-weight: 600; margin-bottom: 8px;">✓ Ausbildung beginnen:</p>
+            <ul style="margin-left: 20px; line-height: 1.8;">
+              <li>Duale Ausbildung</li>
+              <li>Schulische Ausbildung</li>
+              <li>1BFS + Ausbildung</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Karte 3 -->
+        <div class="path-card">
+          <h3 style="color: var(--primary-blue); margin-bottom: 15px;">📗 Mittlere Reife</h3>
+          <p style="margin-bottom: 15px;"><strong>Du möchtest...</strong></p>
+
+          <div style="margin-bottom: 20px;">
+            <p style="font-weight: 600; margin-bottom: 8px;">✓ Fachhochschulreife erlangen:</p>
+            <ul style="margin-left: 20px; line-height: 1.8;">
+              <li>Berufskolleg (1-3 Jahre)</li>
+              <li>BOS (mit Ausbildung)</li>
+              <li>Fachschule (mit Ausbildung)</li>
+            </ul>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <p style="font-weight: 600; margin-bottom: 8px;">✓ Abitur machen:</p>
+            <ul style="margin-left: 20px; line-height: 1.8;">
+              <li>Berufliches Gymnasium (3 Jahre)</li>
+              <li>BOS (2 Jahre mit Ausbildung)</li>
+              <li>Abendgymnasium</li>
+              <li>Kolleg</li>
+            </ul>
+          </div>
+
+          <div>
+            <p style="font-weight: 600; margin-bottom: 8px;">✓ Ausbildung beginnen:</p>
+            <ul style="margin-left: 20px; line-height: 1.8;">
+              <li>Duale Ausbildung</li>
+              <li>Schulische Ausbildung</li>
+              <li>Beamtenlaufbahn (mittlerer Dienst)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OPTIMIERTE TABELLE MIT MEHR PLATZ -->
+    <div style="margin-top: 60px;">
+      <h2 style="color: var(--primary-blue); margin-bottom: 30px;">📞 Wichtige Anlaufstellen für Beratung</h2>
+
+      <div style="overflow-x: auto; background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <table style="width: 100%; border-collapse: collapse;">
+          <colgroup>
+            <col style="width: 22%;">
+            <col style="width: 45%;">
+            <col style="width: 33%;">
+          </colgroup>
+          <thead>
+            <tr style="background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-purple) 100%);">
+              <th style="padding: 22px 20px; text-align: left; color: white; font-weight: 700; font-size: 1.05rem;">Einrichtung</th>
+              <th style="padding: 22px 20px; text-align: left; color: white; font-weight: 700; font-size: 1.05rem;">Angebot</th>
+              <th style="padding: 22px 20px; text-align: left; color: white; font-weight: 700; font-size: 1.05rem;">Kontakt</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 2px solid #e8e8e8;">
+              <td style="padding: 22px 20px; vertical-align: top;"><strong style="font-size: 1.05rem;">Agentur für Arbeit Stuttgart</strong></td>
+              <td style="padding: 22px 20px; vertical-align: top; line-height: 1.8;">Berufsberatung, Berufsinformationszentrum (BIZ), Ausbildungsvermittlung</td>
+              <td style="padding: 22px 20px; vertical-align: top; line-height: 1.9;">Tel: 0800 4555500<br>stuttgart.berufsberatung@<br>arbeitsagentur.de</td>
+            </tr>
+            <tr style="border-bottom: 2px solid #e8e8e8; background: #f8f9fa;">
+              <td style="padding: 22px 20px; vertical-align: top;"><strong style="font-size: 1.05rem;">Jobcenter Stuttgart</strong></td>
+              <td style="padding: 22px 20px; vertical-align: top; line-height: 1.8;">Unterstützung U25, Ausbildungssuche, finanzielle Hilfen</td>
+              <td style="padding: 22px 20px; vertical-align: top; line-height: 1.9;">Tel: 0711 216-97172<br>www.jobcenter-stuttgart.de</td>
+            </tr>
+            <tr style="border-bottom: 2px solid #e8e8e8;">
+              <td style="padding: 22px 20px; vertical-align: top;"><strong style="font-size: 1.05rem;">Jugendagentur Stuttgart</strong></td>
+              <td style="padding: 22px 20px; vertical-align: top; line-height: 1.8;">Informationen Berufswahl, Stellensuche, Freiwilligendienste</td>
+              <td style="padding: 22px 20px; vertical-align: top; line-height: 1.9;">Tel: 0711 25518288<br>www.jugendagentur.net</td>
+            </tr>
+            <tr style="border-bottom: 2px solid #e8e8e8; background: #f8f9fa;">
+              <td style="padding: 22px 20px; vertical-align: top;"><strong style="font-size: 1.05rem;">IHK Region Stuttgart</strong></td>
+              <td style="padding: 22px 20px; vertical-align: top; line-height: 1.8;">Ausbildungsberatung, Lehrstellenbörse</td>
+              <td style="padding: 22px 20px; vertical-align: top; line-height: 1.9;">Tel: 0711 2005-1111<br>www.stuttgart.ihk24.de</td>
+            </tr>
+            <tr style="border-bottom: 2px solid #e8e8e8;">
+              <td style="padding: 22px 20px; vertical-align: top;"><strong style="font-size: 1.05rem;">Handwerkskammer Stuttgart</strong></td>
+              <td style="padding: 22px 20px; vertical-align: top; line-height: 1.8;">Beratung handwerkliche Berufe, Lehrstellenbörse</td>
+              <td style="padding: 22px 20px; vertical-align: top; line-height: 1.9;">Tel: 0711 1657-0<br>www.hwk-stuttgart.de</td>
+            </tr>
+            <tr style="background: #f8f9fa;">
+              <td style="padding: 22px 20px; vertical-align: top;"><strong style="font-size: 1.05rem;">JobConnections</strong></td>
+              <td style="padding: 22px 20px; vertical-align: top; line-height: 1.8;">Bewerbungsunterstützung, Vermittlung in Ausbildung</td>
+              <td style="padding: 22px 20px; vertical-align: top; line-height: 1.9;">Tel: 0711 216-88919<br>www.jobconnections.de</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Förderprogramme -->
+    <div style="margin-top: 50px;">
+      <h2 style="color: var(--primary-blue); margin-bottom: 20px;">🎯 Wichtige Förderprogramme</h2>
+
+      <div class="glossary-item">
+        <div class="glossary-term">AVdual (Ausbildungsvorbereitung dual)</div>
+        <div class="glossary-description">
+          <strong>Für wen:</strong> Jugendliche ohne Ausbildungsplatz, berufsschulpflichtig<br>
+          <strong>Dauer:</strong> 1 Schuljahr<br>
+          <strong>Ziel:</strong> Übergang in Ausbildung durch Betriebspraktika, ggf. Hauptschulabschluss<br>
+          <strong>Besonderheit:</strong> Sozialpädagogische Begleitung, hoher Praxisanteil
+        </div>
+      </div>
+
+      <div class="glossary-item">
+        <div class="glossary-term">BvB (Berufsvorbereitende Bildungsmaßnahme)</div>
+        <div class="glossary-description">
+          <strong>Für wen:</strong> Jugendliche ohne Berufswahlentscheidung oder Ausbildungsplatz<br>
+          <strong>Dauer:</strong> Bis zu 12 Monate<br>
+          <strong>Finanzierung:</strong> Berufsausbildungsbeihilfe (BAB) + Fahrtkosten<br>
+          <strong>Zugang:</strong> Über Berufsberatung der Agentur für Arbeit
+        </div>
+      </div>
+
+      <div class="glossary-item">
+        <div class="glossary-term">EQ (Einstiegsqualifizierung)</div>
+        <div class="glossary-description">
+          <strong>Für wen:</strong> Ausbildungsreife Jugendliche ohne Ausbildungsplatz<br>
+          <strong>Dauer:</strong> 6-12 Monate<br>
+          <strong>Art:</strong> Betriebliches Langzeitpraktikum<br>
+          <strong>Ziel:</strong> Übernahme in Ausbildung<br>
+          <strong>Vergütung:</strong> Praktikumsvergütung + Fahrtkosten
+        </div>
+      </div>
+
+      <div class="glossary-item">
+        <div class="glossary-term">BaE (Berufsausbildung in außerbetrieblichen Einrichtungen)</div>
+        <div class="glossary-description">
+          <strong>Für wen:</strong> Benachteiligte Jugendliche mit Vermittlungshemmnissen<br>
+          <strong>Dauer:</strong> 2-3,5 Jahre (je nach Beruf)<br>
+          <strong>Abschluss:</strong> Anerkannter Berufsabschluss<br>
+          <strong>Besonderheit:</strong> Sozialpädagogische Begleitung und Stützunterricht<br>
+          <strong>Zugang:</strong> Über Berufsberatung oder JobConnections
+        </div>
+      </div>
+    </div>
+
+    <!-- Info-Box -->
+    <div class="info-box" style="margin-top: 40px;">
+      <p><strong>💡 Gut zu wissen:</strong></p>
+      <p><strong>Modell 9+3:</strong> Mit Hauptschulabschluss + erfolgreich abgeschlossener Ausbildung + Berufsschulabschluss (Notenschnitt 2,5) erhältst du einen dem Realschulabschluss gleichwertigen Bildungsstand!</p>
+      <p><strong>BAföG:</strong> Finanzielle Unterstützung für schulische Ausbildungswege (Berufskolleg, Berufliches Gymnasium etc.) - Infos beim Amt für Ausbildungsförderung Stuttgart</p>
+      <p><strong>BAB:</strong> Berufsausbildungsbeihilfe für duale Ausbildungen - Infos bei der Agentur für Arbeit</p>
+    </div>
+  </div>
+</div>
 </body>
 </html>
